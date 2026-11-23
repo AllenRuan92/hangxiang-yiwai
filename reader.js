@@ -19,26 +19,30 @@
     current = Math.max(0, Math.min(chapters.length - 1, index));
     const chapter = chapters[current];
     const blocks = chapter.body.trim().split(/\r?\n\s*\r?\n/);
-    $('story').innerHTML = `<h2>${inline(chapter.title)}</h2>` + blocks.map(block => /^\s*(---|\*\*\*)\s*$/.test(block) ? '<hr>' : `<p>${inline(block).replace(/\r?\n/g, '<br>')}</p>`).join('');
-    $('chapter-count').textContent = `第 ${current + 1} / ${chapters.length} 章`;
+    const title = chapter.title.match(/^(第[一二三四五六七八九十百零〇0-9]+章)[\s：:　]*(.*)$/);
+    const heading = title && title[2] ? `<span class="chapter-label">${inline(title[1])}</span>${inline(title[2])}` : inline(chapter.title);
+    $('story').innerHTML = `<h2>${heading}</h2>` + blocks.map(block => /^\s*(---|\*\*\*)\s*$/.test(block) ? '<hr>' : `<p>${inline(block).replace(/\r?\n/g, '<br>')}</p>`).join('');
+    $('chapter-count').textContent = `${String(current + 1).padStart(2, '0')} / ${String(chapters.length).padStart(2, '0')}`;
     $('previous').disabled = current === 0; $('next').disabled = current === chapters.length - 1;
     document.querySelectorAll('.chapter-link').forEach((button, i) => button.setAttribute('aria-current', String(i === current)));
     storage.set('voyage-chapter', current);
     if (scroll) { storage.set('voyage-offset', 0); $('story').scrollIntoView(); }
     updateProgress();
   }
-  function updateProgress() { const story = $('story'); const length = Math.max(1, story.offsetHeight - innerHeight); const value = Math.max(0, Math.min(1, (scrollY - story.offsetTop) / length)); $('progress-bar').style.width = `${value * 100}%`; }
+  const storyTop = () => $('story').getBoundingClientRect().top + scrollY;
+  function updateProgress() { const story = $('story'); const length = Math.max(1, story.offsetHeight - innerHeight); const value = Math.max(0, Math.min(1, (scrollY - storyTop()) / length)); $('progress-bar').style.width = `${value * 100}%`; }
   let timer;
-  addEventListener('scroll', () => { updateProgress(); if (!restoring && chapters.length) { clearTimeout(timer); timer = setTimeout(() => storage.set('voyage-offset', Math.max(0, scrollY - $('story').offsetTop)), 150); } }, {passive:true});
+  addEventListener('scroll', () => { updateProgress(); if (!restoring && chapters.length) { clearTimeout(timer); timer = setTimeout(() => storage.set('voyage-offset', Math.max(0, scrollY - storyTop())), 150); } }, {passive:true});
   $('previous').onclick = () => render(current - 1); $('next').onclick = () => render(current + 1);
   fetch('航向以外.md').then(response => { if (!response.ok) throw new Error(response.status); return response.text(); }).then(text => {
     const pieces = text.split(/^##\s+(.+)\s*$/m);
     for (let i = 1; i < pieces.length; i += 2) chapters.push({title: pieces[i].trim(), body: pieces[i + 1].replace(/\s*---\s*$/, '')});
     if (!chapters.length) throw new Error('没有找到章节');
+    $('intro-count').textContent = `连载中 · ${chapters.length} 个章节`;
     chapters.forEach((chapter, i) => { const button = document.createElement('button'); button.className = 'chapter-link'; button.type = 'button'; button.textContent = chapter.title; button.onclick = () => { $('contents').hidden = true; $('contents-toggle').setAttribute('aria-expanded', 'false'); render(i); }; $('chapter-list').append(button); });
     const savedChapter = Number(storage.get('voyage-chapter', 0)) || 0;
     const savedOffset = Number(storage.get('voyage-offset', 0)) || 0;
     restoring = true; render(savedChapter, false);
-    if (savedOffset > 0) requestAnimationFrame(() => { window.scrollTo({top: $('story').offsetTop + savedOffset, behavior: 'instant'}); setTimeout(() => { restoring = false; }, 250); }); else restoring = false;
+    if (savedOffset > 0) requestAnimationFrame(() => { window.scrollTo({top: storyTop() + savedOffset, behavior: 'instant'}); setTimeout(() => { restoring = false; }, 250); }); else restoring = false;
   }).catch(() => { $('story').innerHTML = '<p>故事暂时无法载入，请刷新页面重试。</p>'; $('chapter-count').textContent = '载入失败'; });
 })();
