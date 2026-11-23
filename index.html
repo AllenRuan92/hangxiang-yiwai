@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#dcebe7">
+  <meta name="theme-color" content="#e2ebee">
   <meta name="description" content="《航向以外》在线连载，适合手机阅读。">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23102b3b'/%3E%3Ctext x='32' y='46' text-anchor='middle' font-size='42' fill='%23e5a681'%3E%E2%9C%B3%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232e4754'/%3E%3Cpath d='M9 37 C20 36 25 31 32 29 S46 25 55 26 M32 29 C39 35 45 38 55 39' fill='none' stroke='%23e5ece9' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='29' r='3' fill='%23d6a188'/%3E%3C/svg%3E">
   <title>航向以外 · 在线阅读</title>
   <link rel="stylesheet" href="style.css">
   <script src="reader.js" defer></script>
@@ -15,33 +15,62 @@
   <header class="masthead">
     <div class="masthead-inner">
       <a class="brand" href="#top" aria-label="航向以外，回到顶部"><span class="brand-mark" aria-hidden="true">✳</span><span>航向以外</span></a>
-      <button id="contents-toggle" class="text-button" type="button" aria-expanded="false" aria-controls="contents">章节目录 <span aria-hidden="true">☰</span></button>
+      <div class="header-actions">
+        <button id="contents-toggle" type="button" aria-expanded="false" aria-controls="contents">目录 <span aria-hidden="true">⌄</span></button>
+        <button id="settings-toggle" type="button" aria-expanded="false" aria-controls="read-settings">阅读设置 <span aria-hidden="true">Aa</span></button>
+      </div>
+    </div>
+    <div class="panels">
+      <nav id="contents" class="popover contents" aria-label="章节目录" hidden>
+        <div class="popover-heading"><span>章节目录</span><small>选择一章继续阅读</small></div>
+        <div id="chapter-list"><p class="loading-text">正在载入章节……</p></div>
+      </nav>
+      <section id="read-settings" class="popover settings" aria-labelledby="settings-title" hidden>
+        <div class="popover-heading"><span id="settings-title">阅读设置</span><small>保存在本机</small></div>
+        <div class="setting-row">
+          <span>正文字号</span>
+          <div class="size-controls" role="group" aria-label="正文字号">
+            <button id="smaller" type="button" aria-label="缩小字号">−</button>
+            <span id="font-size" aria-live="polite">19</span>
+            <button id="larger" type="button" aria-label="放大字号">+</button>
+          </div>
+        </div>
+        <div class="setting-row"><span>阅读背景</span><button id="theme-toggle" class="theme-button" type="button" aria-label="切换夜间模式" aria-pressed="false">☾ 夜间模式</button></div>
+      </section>
     </div>
   </header>
+
   <main id="top">
     <section class="intro" aria-labelledby="book-title">
       <div class="intro-inner">
-        <div class="intro-copy">
-          <p class="eyebrow">一艘飞船上的故事</p>
-          <h1 id="book-title">航向<span>以外</span></h1>
-          <p id="intro-count" class="intro-note">连载中</p>
+        <div class="intro-heading">
+          <p class="eyebrow"><span class="eyebrow-line"></span>一艘飞船上的故事</p>
+          <h1 id="book-title">航向以外</h1>
+          <p id="intro-count" class="intro-note">故事连载中</p>
         </div>
-        <div class="porthole" aria-hidden="true">
-          <div class="porthole-sky">
-            <span class="porthole-star star-one">✦</span>
-            <span class="porthole-star star-two">·</span>
-            <span class="porthole-orbit"></span>
-            <span class="porthole-planet"></span>
-          </div>
+        <div class="route-art" aria-hidden="true">
+          <svg viewBox="0 0 420 164" fill="none">
+            <path class="route-faint" d="M14 113 C83 113 105 106 145 96 C207 82 248 74 320 68 C352 65 378 66 407 68"/>
+            <path class="route-main" d="M14 111 C77 110 109 102 145 94 C204 79 258 72 316 66 C350 63 381 64 407 66"/>
+            <path class="route-branch" d="M145 94 C186 103 214 119 252 127 C299 137 351 138 397 136"/>
+            <circle class="route-origin" cx="15" cy="111" r="4"/>
+            <circle class="route-node" cx="145" cy="94" r="4"/>
+            <circle class="route-end" cx="407" cy="66" r="8"/>
+            <circle class="route-alt" cx="397" cy="136" r="6"/>
+          </svg>
         </div>
+        <blockquote class="intro-quote">图上的线是算出来的，<br>不是已经铺好的路。<span>— 故事中的一张航线图</span></blockquote>
       </div>
     </section>
+
     <div class="reading-shell">
-      <nav id="contents" class="contents" aria-label="章节目录" hidden><div class="contents-heading"><span>目录</span><small>选择章节开始阅读</small></div><div id="chapter-list"></div></nav>
-      <div class="reader-bar"><span id="chapter-count">正在载入故事</span><div class="reader-controls" role="group" aria-label="阅读设置"><button id="smaller" type="button" aria-label="缩小字号">A−</button><button id="larger" type="button" aria-label="放大字号">A+</button><button id="theme-toggle" type="button" aria-label="切换夜间模式" aria-pressed="false">☾</button></div></div>
+      <div class="reader-meta"><span>正在阅读</span><span id="chapter-count" aria-live="polite">正在载入故事</span></div>
       <article id="story" class="story"><p>正在载入故事……</p></article>
-      <nav class="chapter-navigation" aria-label="章节翻页"><button id="previous" type="button">← 上一章</button><button id="next" type="button">下一章 →</button></nav>
-      <footer><span class="footer-star">✳</span><p>故事还在继续。</p><a href="#top">回到顶部 ↑</a></footer>
+      <nav class="chapter-navigation" aria-label="章节翻页">
+        <button id="previous" type="button" disabled>← 上一章</button>
+        <button id="next" type="button" disabled>下一章 →</button>
+      </nav>
+      <footer><span class="footer-mark" aria-hidden="true">✳</span><p>故事还在继续。</p><a href="#top">回到顶部 ↑</a></footer>
     </div>
   </main>
 </body>
