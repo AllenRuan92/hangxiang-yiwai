@@ -39,6 +39,6 @@
     const savedChapter = Number(storage.get('voyage-chapter', 0)) || 0;
     const savedOffset = Number(storage.get('voyage-offset', 0)) || 0;
     restoring = true; render(savedChapter, false);
-    if (savedOffset > 0) requestAnimationFrame(() => { window.scrollTo(0, $('story').offsetTop + savedOffset); setTimeout(() => { restoring = false; }, 250); }); else restoring = false;
+    if (savedOffset > 0) requestAnimationFrame(() => { window.scrollTo({top: $('story').offsetTop + savedOffset, behavior: 'instant'}); setTimeout(() => { restoring = false; }, 250); }); else restoring = false;
   }).catch(() => { $('story').innerHTML = '<p>故事暂时无法载入，请刷新页面重试。</p>'; $('chapter-count').textContent = '载入失败'; });
 })();
