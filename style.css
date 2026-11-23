@@ -12,8 +12,8 @@
   --accent: #ae6a59;
   --route-accent: #dfaa92;
   --reader-size: 19px;
-  --ui-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-  --book-font: "Songti SC", "STSong", "Noto Serif CJK SC", "SimSun", serif;
+  --ui-font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", "SimHei", sans-serif;
+  --book-font: var(--ui-font);
 }
 
 * { box-sizing: border-box; }
@@ -51,16 +51,18 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .size-controls button:not(:disabled):hover, .theme-button:hover { border-color: var(--accent); color: var(--accent); }
 
 .intro { background: var(--cover); color: var(--cover-ink); }
-.intro-inner { position: relative; max-width: 950px; min-height: 304px; padding: 51px 36px 44px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(270px, .95fr); grid-template-areas: "heading route" "quote route"; column-gap: 42px; align-items: center; }
+.intro-inner { position: relative; max-width: 950px; min-height: 350px; padding: 38px 36px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 190px; grid-template-areas: "heading cover" "quote cover" "route cover"; column-gap: 54px; align-items: center; }
 .intro-heading { grid-area: heading; align-self: end; }
 .eyebrow, .intro-note { margin: 0; color: var(--cover-muted); font: 12px/1.5 var(--ui-font); letter-spacing: .14em; }
 .eyebrow-line { display: inline-block; width: 23px; height: 1px; margin: 0 10px 4px 0; background: var(--route-accent); }
 h1 { margin: 19px 0 13px; font-size: clamp(49px, 6vw, 72px); line-height: 1.2; font-weight: 400; letter-spacing: .13em; white-space: nowrap; }
 .intro-note { letter-spacing: .08em; }
-.intro-quote { grid-area: quote; align-self: end; margin: 28px 0 0; color: var(--cover-ink); font-size: 15px; line-height: 1.8; letter-spacing: .06em; }
+.intro-quote { grid-area: quote; align-self: start; margin: 20px 0 0; color: var(--cover-ink); font-size: 15px; line-height: 1.8; letter-spacing: .06em; }
 .intro-quote span { display: block; margin-top: 8px; color: var(--cover-muted); font: 11px/1.5 var(--ui-font); letter-spacing: .06em; }
-.route-art { grid-area: route; align-self: center; width: 100%; }
+.route-art { grid-area: route; align-self: center; width: min(260px, 100%); margin-top: 8px; }
 .route-art svg { display: block; width: 100%; height: auto; overflow: visible; }
+.book-cover { grid-area: cover; width: 100%; max-width: 190px; margin: 0; justify-self: end; }
+.book-cover img { display: block; width: 100%; height: auto; box-shadow: 0 13px 30px rgb(8 21 26 / .3); }
 .route-main, .route-faint, .route-branch { stroke: var(--route); stroke-linecap: round; }
 .route-main { stroke-width: 1.6; }
 .route-faint { stroke-width: .7; opacity: .35; }
@@ -76,6 +78,8 @@ h1 { margin: 19px 0 13px; font-size: clamp(49px, 6vw, 72px); line-height: 1.2; f
 .story h2 { margin: 0 0 46px; font-size: clamp(28px, 4.5vw, 34px); line-height: 1.55; font-weight: 400; letter-spacing: .09em; scroll-margin-top: 85px; }
 .story h2 .chapter-label { display: block; margin-bottom: 13px; color: var(--muted); font: 12px/1.5 var(--ui-font); letter-spacing: .2em; }
 .story h2:focus { outline: none; }
+.story-illustration { margin: -12px 0 2.1em; }
+.story-illustration img { display: block; width: 100%; height: auto; background: var(--line); }
 .story p { margin: 0 0 1.23em; text-indent: 2em; }
 .story hr { width: 34px; margin: 3em auto; border: 0; border-top: 1px solid var(--accent); }
 .chapter-navigation { display: flex; justify-content: space-between; gap: 16px; padding: 22px 0; border-top: 1px solid var(--line); }
@@ -109,12 +113,12 @@ body.dark {
   .header-actions { gap: 0; }
   .header-actions button { padding: 0 7px; font-size: 12px; }
   .popover { right: 16px; }
-  .intro-inner { min-height: 0; padding: 36px 24px 34px; grid-template-columns: minmax(0, 1fr) minmax(116px, 40%); grid-template-areas: "heading heading" "quote route"; column-gap: 7px; row-gap: 20px; }
+  .intro-inner { min-height: 0; padding: 32px 24px 27px; grid-template-columns: minmax(0, 1fr) min(34%, 124px); grid-template-areas: "heading cover" "quote cover" "route route"; column-gap: 17px; row-gap: 14px; }
   .eyebrow, .intro-note { font-size: 11px; }
-  h1 { margin: 17px 0 10px; font-size: clamp(40px, 11vw, 50px); letter-spacing: .11em; }
-  .intro-quote { align-self: center; margin: 0; font-size: 13px; line-height: 1.85; letter-spacing: .02em; }
+  h1 { margin: 16px 0 10px; font-size: clamp(32px, 9.5vw, 50px); letter-spacing: .07em; }
+  .intro-quote { align-self: start; margin: 0; font-size: 13px; line-height: 1.8; letter-spacing: 0; }
   .intro-quote span { font-size: 11px; }
-  .route-art { align-self: center; }
+  .route-art { width: 140px; margin-top: 0; }
   .reading-shell { padding: 0 24px; }
   .reader-meta { padding: 28px 0 15px; }
   .story { padding-top: 33px; line-height: 2; }
@@ -124,7 +128,7 @@ body.dark {
 @media (max-width: 350px) {
   .masthead-inner { padding: 0 15px; }
   .header-actions button { padding: 0 5px; }
-  .intro-inner { padding-left: 20px; padding-right: 20px; grid-template-columns: minmax(0, 1fr) minmax(105px, 38%); }
+  .intro-inner { padding-left: 20px; padding-right: 20px; grid-template-columns: minmax(0, 1fr) 105px; }
   .reading-shell { padding: 0 21px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

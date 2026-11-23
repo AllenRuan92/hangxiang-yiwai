@@ -62,6 +62,24 @@
 
   const escape = text => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const inline = text => escape(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+  const optimizedIllustrations = new Set([
+    'generated/chapter-01-20261123-153602-2k.png',
+    'generated/chapter-02-20261123-154403-2k.png',
+    'generated/chapter-03-20261123-155519-2k.png',
+    'generated/chapter-04-20261123-155713-2k.png'
+  ]);
+  function renderBlock(block) {
+    if (/^\s*(---|\*\*\*)\s*$/.test(block)) return '<hr>';
+    const illustration = block.trim().match(/^!\[([^\]]*)\]\((generated\/[\w.-]+\.(?:png|jpe?g|webp))\)$/i);
+    if (illustration) {
+      const [, alt, path] = illustration;
+      const optimized = optimizedIllustrations.has(path);
+      const source = optimized ? '<source srcset="' + escape(path.replace(/\.png$/i, '.webp')) + '" type="image/webp">' : '';
+      const dimensions = optimized ? ' width="1672" height="941"' : '';
+      return '<figure class="story-illustration"><picture>' + source + '<img src="' + escape(path) + '" alt="' + escape(alt) + '"' + dimensions + ' loading="lazy" decoding="async"></picture></figure>';
+    }
+    return '<p>' + inline(block).replace(/\r?\n/g, '<br>') + '</p>';
+  }
   const storyTop = () => $('story').getBoundingClientRect().top + scrollY;
 
   function updateProgress() {
@@ -81,9 +99,7 @@
     const blocks = chapter.body.trim().split(/\r?\n\s*\r?\n/);
     const title = chapter.title.match(/^(第[一二三四五六七八九十百零〇0-9]+章)[\s：:　]*(.*)$/);
     const heading = title && title[2] ? '<span class="chapter-label">' + inline(title[1]) + '</span>' + inline(title[2]) : inline(chapter.title);
-    $('story').innerHTML = '<h2 tabindex="-1">' + heading + '</h2>' + blocks.map(block =>
-      /^\s*(---|\*\*\*)\s*$/.test(block) ? '<hr>' : '<p>' + inline(block).replace(/\r?\n/g, '<br>') + '</p>'
-    ).join('');
+    $('story').innerHTML = '<h2 tabindex="-1">' + heading + '</h2>' + blocks.map(renderBlock).join('');
     $('chapter-count').textContent = '第 ' + String(current + 1).padStart(2, '0') + ' / ' + String(chapters.length).padStart(2, '0') + ' 章';
     $('previous').disabled = current === 0;
     $('next').disabled = current === chapters.length - 1;
@@ -133,9 +149,17 @@
     });
 
     const savedChapter = Number(storage.get('voyage-chapter', 0)) || 0;
-    const savedOffset = Number(storage.get('voyage-offset', 0)) || 0;
+    let savedOffset = Number(storage.get('voyage-offset', 0)) || 0;
+    const needsIllustrationAdjustment = storage.get('voyage-illustrated-layout', '') !== '1';
     restoring = true;
     render(savedChapter, false);
+    const illustration = $('story').querySelector('.story-illustration');
+    if (needsIllustrationAdjustment && illustration && savedOffset > illustration.getBoundingClientRect().top - $('story').getBoundingClientRect().top) {
+      const style = getComputedStyle(illustration);
+      savedOffset += illustration.offsetHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom);
+      storage.set('voyage-offset', savedOffset);
+    }
+    storage.set('voyage-illustrated-layout', '1');
     if (savedOffset > 0 && Number.isFinite(savedOffset)) {
       requestAnimationFrame(() => {
         window.scrollTo({ top: storyTop() + savedOffset, behavior: 'instant' });
